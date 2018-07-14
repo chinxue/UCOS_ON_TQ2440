@@ -57,6 +57,7 @@ void ChangeUPllValue(int m,int p,int s);
 void ChangeMPllValue(int m,int p,int s);
 
 void Rtc_Init(void);
-void Beep(U32 , U32 );
+void Beep(U16);
+void Buzzer_Init(void);
 
 #endif  //__2440lib_h__

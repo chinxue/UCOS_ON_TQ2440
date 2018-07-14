@@ -524,6 +524,8 @@ void Rtc_Init(void)
 }
 
 /*****************************¡¾·äÃùÆ÷¡¿************************************/
+
+
 void Buzzer_Freq_Set( U32 freq )
 {
 	rGPBCON &= ~3;			//set GPB0 as tout0, pwm output
@@ -540,6 +542,11 @@ void Buzzer_Freq_Set( U32 freq )
 	rTCON &= ~2;			//clear manual update bit
 }
 
+void Buzzer_Init(void)
+{
+	Buzzer_Freq_Set(3000);
+}
+
 void Buzzer_Stop( void )
 {
 	rGPBCON &= ~3;			//set GPB0 as output
@@ -547,9 +554,10 @@ void Buzzer_Stop( void )
 	rGPBDAT &= ~1;
 }
 
-void Beep(U32 freq, U32 ms)
+void Beep(U16 ms)			//U32 freq, 
 {
-	Buzzer_Freq_Set( freq ) ;
-	Delay( ms ) ;
-	Buzzer_Stop() ;
+//	Buzzer_Freq_Set(freq);
+//	Delay( ms );
+	OSTimeDly(OS_TICKS_PER_SEC*ms);
+	Buzzer_Stop();
 }

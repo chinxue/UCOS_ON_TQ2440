@@ -61,26 +61,35 @@ void MainTask(void *pdata) //Main Task create taks0 and task1
 	OS_EXIT_CRITICAL();
 
 	OSPrintfInit();				//use task to print massage to Uart 
+	OSPrintf("\n\n***************************************************\n");		//打印间隔行，区分每次任务 7.14增加
 
 	OSStatInit();
-	OSTaskCreate (Task0,(void *)0, &Task0Stk[Task0StkLengh - 1], Task0Prio);	
+	OSTaskCreate (
+					Task0,														//指向任务的指针
+					(void *)0,													//传递给任务的参数
+					&Task0Stk[Task0StkLengh - 1],								//指向任务栈顶的指针
+					Task0Prio);													//任务优先级
 	OSTaskCreate (Task1,(void *)0, &Task1Stk[Task1StkLengh - 1], Task1Prio);	
 	OSTaskCreate (Task2,(void *)0, &Task2Stk[Task2StkLengh - 1], Task2Prio);	 
 	while(1)
 	{
 		OSPrintf("\nEnter Main Task\n");
-		OSTimeDly(OS_TICKS_PER_SEC*5);
+		OSTimeDly(OS_TICKS_PER_SEC*50);
 	}
 }
 
 void Task0(void *pdata)				//任务0，打印CPU占用率
 {
+	pdata=pdata;
 	while (1)
 	{
 		OSPrintf("\nEnter Task0\n");
 		OSPrintf("CPU Usage: %d%%\n",OSCPUUsage); //打印CPU占用率，调用系统变量实现
+		OSPrintf("CPU Idl CTR is: %d\n",OSIdleCtrMax);	//每秒空闲任务的数量
+		OSPrintf("CPU Time is: %ld\n",OSTime);			//打印CPU_TICK的总数
 
-		OSTimeDly(OS_TICKS_PER_SEC*5);
+//		OSTimeDly(OS_TICKS_PER_SEC*5);
+		OSTimeDlyHMSM(0, 0, 2, 0);										//设置延时2s，7.14增加
 	}
 }
 
@@ -92,7 +101,7 @@ void Task1(void *pdata)				//任务1，控制LED灯亮，开启蜂鸣器同时鸣叫
 	{
 		// RTC初始化
 		Rtc_Init();
-
+		Buzzer_Init();
 		user_task1_firstboot = 0;
 	}
 
@@ -109,14 +118,16 @@ void Task1(void *pdata)				//任务1，控制LED灯亮，开启蜂鸣器同时鸣叫
 			rGPBDAT = rGPBDAT - (0x10<<(task1Cnt%5));	//流水灯
 
 		//蜂鸣器鸣叫
-/*		Beep(3000, 60);
-		Beep(2500, 60);
+		Beep(5);
+/*		Beep(2500, 60);
 		Beep(2000, 60);
 		Beep(1500, 60);
 		Beep(1000, 60);
 		Beep(900, 60);
 */
-		OSTimeDly(OS_TICKS_PER_SEC*5);
+//		OSTimeDly(OS_TICKS_PER_SEC*5);
+		OSTimeDlyHMSM(0, 0, 20, 0);										//设置延时1s，7.14增加
+
 	}
 }
 
@@ -152,7 +163,7 @@ void Task2(void *pdata)
 			rMinute     = FROM_BCD(rBCDMIN & 0x7f);
 			rSecond     = FROM_BCD(rBCDSEC & 0x7f);
 
-		OSTimeDly( 5 );
+	//	OSTimeDly( 5 );
 		OSPrintf("\nEnter Task2\n");	
 		OSPrintf("LCD display Test!\n\n");	
 
@@ -163,7 +174,8 @@ void Task2(void *pdata)
 		Lcd_printf(84,92,RGB( 0xFF,0xFF,0xFF),RGB( 0x00,0x00,0x00),1," uC/OS2任务演示");
 		Lcd_printf(89,122,RGB( 0xFF,0xFF,0xFF),RGB( 0x00,0x00,0x00),0,"任务 计数中:%02d" , i);
 
-		OSTimeDly(OS_TICKS_PER_SEC);
+	//	OSTimeDly(OS_TICKS_PER_SEC);
+		OSTimeDlyHMSM(0, 0, 1, 0);									//设置延时1s，7.14增加
 	}
 }
 
